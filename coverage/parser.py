@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import ast
+import functools
 import collections
 import os
 import re
@@ -99,6 +100,7 @@ class PythonParser:
         self._all_arcs: set[TArc] | None = None
         self._missing_arc_fragments: TArcFragments | None = None
 
+    @functools.lru_cache()
     def lines_matching(self, *regexes: str) -> set[TLineNo]:
         """Find the lines matching one of a list of regexes.
 
@@ -231,6 +233,7 @@ class PythonParser:
         if env.PYBEHAVIOR.module_firstline_1 and self._multiline:
             self._multiline[1] = min(self.raw_statements)
 
+    @functools.lru_cache(maxsize=1000)
     def first_line(self, lineno: TLineNo) -> TLineNo:
         """Return the first line number of the statement including `lineno`."""
         if lineno < 0:
@@ -311,6 +314,7 @@ class PythonParser:
 
         self._missing_arc_fragments = aaa.missing_arc_fragments
 
+    @functools.lru_cache()
     def exit_counts(self) -> dict[TLineNo, int]:
         """Get a count of exits from that each line.
 
